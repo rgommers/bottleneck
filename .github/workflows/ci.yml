@@ -14,21 +14,7 @@ jobs:
           [ubuntu-22.04, ubuntu-24.04-arm, macos-13, macos-latest]
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install
-        run: |
-          pip install . -v
-
-      - name: Test with pytest
-        run: |
-          pip install pytest
-          cd doc  # avoid picking up bottleneck from the source dir
-          pytest --pyargs bottleneck
+      - uses: ./.github/bottleneck-action
 
   test-windows:
     runs-on: ${{ matrix.os }}
@@ -39,28 +25,7 @@ jobs:
         os: [windows-latest, windows-2019]
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: ${{ matrix.architecture }}
-
-
-      - if: ${{ endsWith(matrix.python-version, 't') }}
-        run: |
-          pip install pytest-run-parallel
-          echo "PYTEST_ADDOPTS=--parallel-threads=4" >> "$GITHUB_ENV"
-
-      - name: Install
-        run: |
-          pip install . -v
-
-      - name: Test with pytest
-        run: |
-          pip install pytest
-          cd doc
-          pytest --pyargs bottleneck
+      - uses: ./.github/bottleneck-action
 
   check:
     # This job is here is the "Required" one for merging PRs, and
